@@ -982,3 +982,12 @@ fn nr_counts_across_files() {
         .succeeds()
         .stdout_is("1 1\n2 2\n3 1\n");
 }
+
+#[test]
+fn length_without_parentheses_is_length_of_record() {
+    ucmd()
+        .arg("length > 2 { print length, length / 2 } BEGIN { print length }")
+        .pipe_in("ab\nabcd\nxyz\n")
+        .succeeds()
+        .stdout_only("0\n4 2\n3 1.5\n");
+}

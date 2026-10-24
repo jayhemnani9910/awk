@@ -241,12 +241,15 @@ fn lexer_test_general_tokens() {
 fn lexer_test_regex_ambiguity() {
     let arena = Bump::new();
     assert_eq!(
-        &lex(b"1/=1. a/=1", &arena, false, false),
+        &lex(b"1/=1. a/=1 NR/=1", &arena, false, false),
         &[
             Token::Integer(1),
             Token::SlashAssign,
             Token::Number(1.),
             Token::Identifier(Identifier { literal: "a" }),
+            Token::SlashAssign,
+            Token::Integer(1),
+            Token::NrVariable,
             Token::SlashAssign,
             Token::Integer(1)
         ]

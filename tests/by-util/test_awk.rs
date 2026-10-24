@@ -990,4 +990,9 @@ fn length_without_parentheses_is_length_of_record() {
         .pipe_in("ab\nabcd\nxyz\n")
         .succeeds()
         .stdout_only("0\n4 2\n3 1.5\n");
+    ucmd()
+        .arg("{ print length(/b/), length $1 }")
+        .pipe_in("abc def\nxyz\n")
+        .succeeds()
+        .stdout_only("1 7abc\n1 3xyz\n");
 }

@@ -903,8 +903,8 @@ fn bare_regex_in_expression_matches_record() {
 #[test]
 fn slash_after_special_variable_divides() {
     ucmd()
-        .arg("{ print NR / 2, NF/NR } END { RSTART = 8; print RSTART / 2 / 2 }")
+        .arg("{ print NR / 2, NF/NR } END { RSTART = 8; print RSTART / 2 / 2; NR = 6; NR /= 2; print NR }")
         .pipe_in("a b\nc d\n")
         .succeeds()
-        .stdout_only("0.5 2\n1 1\n2\n");
+        .stdout_only("0.5 2\n1 1\n2\n3\n");
 }

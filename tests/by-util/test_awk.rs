@@ -996,3 +996,12 @@ fn length_without_parentheses_is_length_of_record() {
         .succeeds()
         .stdout_only("1 7abc\n1 3xyz\n");
 }
+
+#[test]
+fn test_referencing_an_element_creates_it() {
+    // POSIX: a reference to a nonexistent element creates it.
+    ucmd()
+        .arg(r#"BEGIN { x[1]; y = a["k"] a["j"]; print length(x), (1 in x), length(a), ("z" in a) }"#)
+        .succeeds()
+        .stdout_only("1 1 2 0\n");
+}

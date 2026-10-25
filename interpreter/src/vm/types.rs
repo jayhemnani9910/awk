@@ -342,12 +342,14 @@ impl<'a> AwkValue<'a> {
         Some(())
     }
 
+    /// Read an element. As in POSIX awk, referencing an element that does not
+    /// exist creates it, uninitialized.
     fn get_array_elem(&mut self, key: &[u8]) -> Option<Value<'a>> {
         self.as_array().map(|arr| {
-            arr.borrow()
-                .get(key)
-                .cloned()
-                .unwrap_or(Value::new_untyped())
+            arr.borrow_mut()
+                .entry_ref(key)
+                .or_insert_with(Value::new_untyped)
+                .clone()
         })
     }
 

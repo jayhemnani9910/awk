@@ -629,6 +629,22 @@ fn test_parser_printf() {
 }
 
 #[test]
+fn test_parser_print_list_after_parenthesized_first_expression() {
+    let source = r#"
+        { print ($1) "-", $2 }
+        { print (1) + 1, 2, 3 }
+        { print (1) ? "a" : "b", 2 }
+    "#;
+    test_parser!(source => {
+        rules: [
+            (None, Some("(body (Print (Concat (Record 1) \"-\") (Record 2)))")),
+            (None, Some("(body (Print (Add 1 1) 2 3))")),
+            (None, Some("(body (Print (?: 1 \"a\" \"b\") 2))")),
+        ],
+    });
+}
+
+#[test]
 fn test_parser_control_flow() {
     let source = r"
         { next }

@@ -653,7 +653,16 @@ impl<'a> Parser<'a> {
                 args.push(
                     parser.fold_rhs(lex, lhs, start, 0, |t| Redirection::parse(t).is_some())?,
                 );
-                self.parse_command_args(lex, &mut args)?;
+                // `print (1) + 1, 2`: the rest of the list follows a comma
+                if lex.consume(&Token::Comma) {
+                    if !lex.peek_with(Token::is_expr_start) {
+                        return Err(ParsingError::InvalidExpression(
+                            lex.span(),
+                            String::from("Expected next argument!"),
+                        ));
+                    }
+                    self.parse_command_args(lex, &mut args)?;
+                }
             }
             args
         } else {

@@ -1,0 +1,17 @@
+Index: gnu.awk/test/mdim1.ok
+===================================================================
+--- a/test/mdim1.ok
++++ b/test/mdim1.ok
+@@ -5,5 +5,11 @@ typeof(x[0][1]) is string
+ typeof(y) is untyped
+ typeof(y) is unassigned
+ typeof(z) is unassigned
+-gawk: mdim1.awk:13: fatal: attempt to use scalar `x["1"]' as an array
++Error: Execution error
++    ╭─[ ../gnu.awk/test/mdim1.awk:13:2 ]
++    │
++ 13 │     x[1][0] = "xx" # this will fatal
++    │     ───────┬──────  
++    │            ╰──────── Attempted to use a scalar as an array value!
++────╯
+ EXIT CODE: 2

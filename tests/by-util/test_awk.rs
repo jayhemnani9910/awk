@@ -1005,3 +1005,18 @@ fn test_referencing_an_element_creates_it() {
         .succeeds()
         .stdout_only("1 1 2 0\n");
 }
+
+#[test]
+fn integral_numbers_print_as_integers() {
+    ucmd()
+        .arg("BEGIN { print 2^64, 1e16, -1e16, -0; x = 1e16 \"\"; print x }")
+        .succeeds()
+        .stdout_only(
+            "18446744073709551616 10000000000000000 -10000000000000000 0\n10000000000000000\n",
+        );
+    ucmd()
+        .arg("{ print $1 * 1 }")
+        .pipe_in("5e20\n")
+        .succeeds()
+        .stdout_only("500000000000000000000\n");
+}

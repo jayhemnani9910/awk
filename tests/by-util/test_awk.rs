@@ -1020,3 +1020,12 @@ fn integral_numbers_print_as_integers() {
         .succeeds()
         .stdout_only("500000000000000000000\n");
 }
+
+#[test]
+fn uninitialized_value_compares_as_zero_with_a_number() {
+    // An uninitialized value is both "" and 0, so it compares numerically with a number.
+    ucmd()
+        .arg(r#"BEGIN { print (x == 0), (0 == x), (x < 1), (x > -1), (x >= 0), (x != 0), ("" == x), (a["k"] == 0) }"#)
+        .succeeds()
+        .stdout_only("1 1 1 1 1 0 1 1\n");
+}

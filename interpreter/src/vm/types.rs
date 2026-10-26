@@ -497,6 +497,11 @@ impl PartialEq for AwkValue<'_> {
             | (&Self::Bool(AwkBool(b)), &Self::Float(AwkNum(f))) => b && f == 1.,
             (&Self::Int(AwkInt(f)), &Self::Bool(AwkBool(b)))
             | (&Self::Bool(AwkBool(b)), &Self::Int(AwkInt(f))) => b && f == 1,
+            // An uninitialized value compares as 0 against a number
+            (Self::Untyped | Self::Unassigned, Self::Float(_) | Self::Int(_) | Self::Bool(_))
+            | (Self::Float(_) | Self::Int(_) | Self::Bool(_), Self::Untyped | Self::Unassigned) => {
+                self.to_num() == other.to_num()
+            }
             // String-based comparisons
             _ if let (Some(lhs), Some(rhs)) = (self.as_str(), other.as_str()) => lhs == rhs,
             (&Self::Float(AwkNum(f)), _) if let Some(s) = other.as_str() => {
@@ -519,7 +524,7 @@ impl PartialEq for AwkValue<'_> {
             }
             // True on empty string value.
             (Self::Untyped | Self::Unassigned, _) if let Some(s) = other.as_str() => s.is_empty(),
-            (_, Self::Untyped | Self::Unassigned) if let Some(s) = other.as_str() => s.is_empty(),
+            (_, Self::Untyped | Self::Unassigned) if let Some(s) = self.as_str() => s.is_empty(),
             (Self::Untyped | Self::Unassigned, Self::Untyped | Self::Unassigned) => true,
             (Self::Untyped | Self::Unassigned, _) | (_, Self::Untyped | Self::Unassigned) => false,
             (Self::Array(_), _) | (_, Self::Array(_)) => {
@@ -545,6 +550,10 @@ impl PartialOrd for AwkValue<'_> {
             (&Self::Bool(AwkBool(b)), Self::Float(AwkNum(f))) => (b as usize as f64).partial_cmp(f),
             (&Self::Int(AwkInt(n)), &Self::Bool(AwkBool(b))) => n.partial_cmp(&(b as i32)),
             (&Self::Bool(AwkBool(b)), Self::Int(AwkInt(f))) => (b as i32).partial_cmp(f),
+            (Self::Untyped | Self::Unassigned, Self::Float(_) | Self::Int(_) | Self::Bool(_))
+            | (Self::Float(_) | Self::Int(_) | Self::Bool(_), Self::Untyped | Self::Unassigned) => {
+                self.to_num().partial_cmp(&other.to_num())
+            }
             // String-based comparisons
             (_, _) if let (Some(lhs), Some(rhs)) = (self.as_str(), other.as_str()) => {
                 lhs.as_ref().partial_cmp(rhs)

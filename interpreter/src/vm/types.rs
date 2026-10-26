@@ -376,6 +376,12 @@ impl<'a> AwkValue<'a> {
         }
         match self {
             // TODO: NaN and infinities.
+            // An integral value is written as an integer, as by "%d" (POSIX),
+            // so 2^64 and 1e16 keep all their digits and -0 is "0".
+            Self::Float(f) if f.0.is_finite() && f.0.fract() == 0.0 => {
+                let n = if f.0 == 0.0 { 0.0 } else { f.0 };
+                out.extend_from_slice(format!("{n:.0}").as_bytes());
+            }
             Self::Float(f) => {
                 let mut buf = zmij::Buffer::new();
                 let s = buf.format(f.0);

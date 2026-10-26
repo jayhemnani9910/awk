@@ -43,7 +43,7 @@ jobs:
       run: |
         ## gawk's ./configure (which generates test/Makefile) needs a C toolchain
         sudo apt-get update
-        sudo apt-get install -y build-essential autoconf automake gettext bison
+        sudo apt-get install -y build-essential autoconf automake gettext bison patch quilt
 
     - name: Fetch GNU awk testsuite
       shell: bash

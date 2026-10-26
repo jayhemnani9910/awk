@@ -154,6 +154,14 @@ if [[ ! -f "$RUST_AWK_DIR/Cargo.toml" ]]; then
     exit 1
 fi
 
+# Patch test suite
+export QUILT_PATCHES="${RUST_AWK_DIR}/util/gnu-patches/"
+cd "$GNU_AWK_DIR" || exit 1
+if [ "$(quilt applied 2>/dev/null | wc -l)" -ne "$(quilt series | wc -l)" ]; then
+    quilt push -a || { log_error "Failed to apply patches"; exit 1; }
+fi
+log_info "Successfully patched test suite"
+
 # Build the Rust awk implementation
 log_info "Building Rust awk implementation..."
 cd "$RUST_AWK_DIR" || exit 1
@@ -289,6 +297,12 @@ done
 
 # Tidy up the markers we created in the (shared) GNU tree.
 ( cd "$GNU_TESTS_DIR" && rm -f _* )
+
+# Restore GNU test suite state when not in CI; useful for local development.
+if [[ ! -v CI ]]; then
+    cd "$GNU_AWK_DIR" || exit 1
+    quilt pop -a &> /dev/null || { log_error "Failed to restore test suite"; exit 1; }
+fi
 
 # Print summary
 echo
